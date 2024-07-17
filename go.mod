@@ -23,7 +23,7 @@ require (
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.9.0
-	github.com/xtls/xray-core v1.8.17-0.20240708033233-ce637c0c232c
+	github.com/xtls/xray-core v1.8.18
 	golang.org/x/crypto v0.25.0
 	golang.org/x/net v0.27.0
 	golang.org/x/time v0.5.0
@@ -252,7 +252,7 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/vultr/govultr/v2 v2.17.2 // indirect
-	github.com/xtls/reality v0.0.0-20240429224917-ecc4401070cc // indirect
+	github.com/xtls/reality v0.0.0-20240712055506-48f0b2d5ed6d // indirect
 	github.com/yandex-cloud/go-genproto v0.0.0-20240311082839-58e1a7554a75 // indirect
 	github.com/yandex-cloud/go-sdk v0.0.0-20240311083148-81c0846b96cd // indirect
 	github.com/yosssi/ace v0.0.5 // indirect

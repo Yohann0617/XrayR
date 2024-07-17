@@ -160,7 +160,7 @@ func (l *Limiter) GetOnlineDevice(tag string) (*[]api.OnlineUser, error) {
 	return &onlineUser, nil
 }
 
-func (l *Limiter) GetUserBucket(tag string, email string, ip string) (limiter *rate.Limiter, SpeedLimit bool, Reject bool) {
+func (l *Limiter) GetUserBucket(tag string, email string, ip string, isSourceTCP bool) (limiter *rate.Limiter, SpeedLimit bool, Reject bool) {
 	if value, ok := l.InboundInfo.Load(tag); ok {
 		var (
 			userLimit        uint64 = 0
@@ -177,22 +177,24 @@ func (l *Limiter) GetUserBucket(tag string, email string, ip string) (limiter *r
 			deviceLimit = u.DeviceLimit
 		}
 
-		// Local device limit
-		ipMap := new(sync.Map)
-		ipMap.Store(ip, uid)
-		// If any device is online
-		if v, ok := inboundInfo.UserOnlineIP.LoadOrStore(email, ipMap); ok {
-			ipMap := v.(*sync.Map)
-			// If this is a new ip
-			if _, ok := ipMap.LoadOrStore(ip, uid); !ok {
-				counter := 0
-				ipMap.Range(func(key, value interface{}) bool {
-					counter++
-					return true
-				})
-				if counter > deviceLimit && deviceLimit > 0 {
-					ipMap.Delete(ip)
-					return nil, false, true
+		// Local device limit, only for TCP connection
+		if isSourceTCP {
+			ipMap := new(sync.Map)
+			ipMap.Store(ip, uid)
+			// If any device is online
+			if v, ok := inboundInfo.UserOnlineIP.LoadOrStore(email, ipMap); ok {
+				ipMap := v.(*sync.Map)
+				// If this is a new ip
+				if _, ok := ipMap.LoadOrStore(ip, uid); !ok {
+					counter := 0
+					ipMap.Range(func(key, value interface{}) bool {
+						counter++
+						return true
+					})
+					if counter > deviceLimit && deviceLimit > 0 {
+						ipMap.Delete(ip)
+						return nil, false, true
+					}
 				}
 			}
 		}

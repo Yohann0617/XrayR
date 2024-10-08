@@ -65,5 +65,8 @@ type user struct {
 	Uuid        string `json:"uuid"`
 	SpeedLimit  int    `json:"speed_limit"`
 	DeviceLimit int    `json:"device_limit"`
-	AliveIp     int    `json:"alive_ip"`
+}
+
+type AliveMap struct {
+	Alive map[int]int `json:"alive"`
 }

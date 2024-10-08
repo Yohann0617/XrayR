@@ -16,7 +16,9 @@ import (
 	"github.com/xtls/xray-core/features/stats"
 
 	"github.com/wyx2685/XrayR/api"
+	"github.com/wyx2685/XrayR/api/newV2board"
 	"github.com/wyx2685/XrayR/app/mydispatcher"
+	"github.com/wyx2685/XrayR/common/limiter"
 	"github.com/wyx2685/XrayR/common/mylego"
 	"github.com/wyx2685/XrayR/common/serverstatus"
 )
@@ -114,6 +116,14 @@ func (c *Controller) Start() error {
 		c.logger.Print(err)
 	}
 
+	// Update alive user list
+	if v2b, ok := c.apiClient.(*newV2board.APIClient); ok {
+		if v, ok := c.dispatcher.Limiter.InboundInfo.Load(c.Tag); ok {
+			inboundinfo := v.(*limiter.InboundInfo)
+			inboundinfo.AliveList = v2b.AliveMap.Alive
+		}
+	}
+
 	// Add Rule Manager
 	if !c.config.DisableGetRule {
 		if ruleList, err := c.apiClient.GetNodeRule(); err != nil {
@@ -207,6 +217,14 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 	// Update User
 	var usersChanged = true
 	newUserInfo, err := c.apiClient.GetUserList()
+
+	// Update alive user list
+	if v2b, ok := c.apiClient.(*newV2board.APIClient); ok {
+		if v, ok := c.dispatcher.Limiter.InboundInfo.Load(c.Tag); ok {
+			inboundinfo := v.(*limiter.InboundInfo)
+			inboundinfo.AliveList = v2b.AliveMap.Alive
+		}
+	}
 	if err != nil {
 		if err.Error() == api.UserNotModified {
 			usersChanged = false
